@@ -2,8 +2,12 @@ package tk.mybatis.simple.netty;
 
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import tk.mybatis.simple.mapper.CountryMapperTest;
 import tk.mybatis.simple.model.Country;
 import java.util.List;
@@ -29,9 +33,13 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
 
     protected void channelRead0(final ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         System.out.println("收到消息:"+msg.text());
-        ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
-        cachedThreadPool.execute(new action(ctx));
-
+        EventLoopGroup eventExecutors = new NioEventLoopGroup();
+        Future futur = eventExecutors.submit(new action(ctx));
+        futur.addListener(new GenericFutureListener() {
+            public void operationComplete(Future future) throws Exception {
+                System.out.println("完成");
+            }
+        });
     }
 
     @Override
