@@ -40,6 +40,7 @@ public class TextWebSocketFrameHandler extends SimpleChannelInboundHandler<TextW
                 System.out.println("完成");
             }
         });
+        System.out.println("end");
     }
 
     @Override
